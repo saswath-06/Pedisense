@@ -18,6 +18,17 @@
 		07891B072F93DC0B00672D1B /* BiomechanicsAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07891B062F93DC0300672D1B /* BiomechanicsAnalyzer.swift */; };
 		07891B092F93DD4300672D1B /* CalibrationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07891B082F93DD4000672D1B /* CalibrationService.swift */; };
 		07891B0B2F93DD5600672D1B /* CalibrationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07891B0A2F93DD5300672D1B /* CalibrationView.swift */; };
+		07891B0E2F93EB4600672D1B /* AgentClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07891B0D2F93EB4200672D1B /* AgentClient.swift */; };
+		07891B102F93ED4300672D1B /* ExerciseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07891B0F2F93ED4000672D1B /* ExerciseView.swift */; };
+		07891B122F93ED6100672D1B /* TrendsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07891B112F93ED5E00672D1B /* TrendsView.swift */; };
+		07891B172F93F29200672D1B /* SupabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07891B162F93F29000672D1B /* SupabaseManager.swift */; };
+		07891B192F93F4E700672D1B /* ReportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07891B182F93F4E500672D1B /* ReportView.swift */; };
+		07891B1C2F93F6E500672D1B /* Auth in Frameworks */ = {isa = PBXBuildFile; productRef = 07891B1B2F93F6E500672D1B /* Auth */; };
+		07891B1E2F93F6E500672D1B /* Functions in Frameworks */ = {isa = PBXBuildFile; productRef = 07891B1D2F93F6E500672D1B /* Functions */; };
+		07891B202F93F6E500672D1B /* PostgREST in Frameworks */ = {isa = PBXBuildFile; productRef = 07891B1F2F93F6E500672D1B /* PostgREST */; };
+		07891B222F93F6E500672D1B /* Realtime in Frameworks */ = {isa = PBXBuildFile; productRef = 07891B212F93F6E500672D1B /* Realtime */; };
+		07891B242F93F6E500672D1B /* Storage in Frameworks */ = {isa = PBXBuildFile; productRef = 07891B232F93F6E500672D1B /* Storage */; };
+		07891B262F93F6E500672D1B /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 07891B252F93F6E500672D1B /* Supabase */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -33,7 +44,11 @@
 		07891B062F93DC0300672D1B /* BiomechanicsAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiomechanicsAnalyzer.swift; sourceTree = "<group>"; };
 		07891B082F93DD4000672D1B /* CalibrationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalibrationService.swift; sourceTree = "<group>"; };
 		07891B0A2F93DD5300672D1B /* CalibrationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalibrationView.swift; sourceTree = "<group>"; };
-		07891B0C2F93DF2600672D1B /* Untitled.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Untitled.swift; sourceTree = "<group>"; };
+		07891B0D2F93EB4200672D1B /* AgentClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgentClient.swift; sourceTree = "<group>"; };
+		07891B0F2F93ED4000672D1B /* ExerciseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseView.swift; sourceTree = "<group>"; };
+		07891B112F93ED5E00672D1B /* TrendsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrendsView.swift; sourceTree = "<group>"; };
+		07891B162F93F29000672D1B /* SupabaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseManager.swift; sourceTree = "<group>"; };
+		07891B182F93F4E500672D1B /* ReportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -62,6 +77,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				07891B202F93F6E500672D1B /* PostgREST in Frameworks */,
+				07891B1E2F93F6E500672D1B /* Functions in Frameworks */,
+				07891B262F93F6E500672D1B /* Supabase in Frameworks */,
+				07891B1C2F93F6E500672D1B /* Auth in Frameworks */,
+				07891B242F93F6E500672D1B /* Storage in Frameworks */,
+				07891B222F93F6E500672D1B /* Realtime in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -82,9 +103,14 @@
 				07891AFF2F93CB9400672D1B /* AlertEngine.swift */,
 				07891B022F93CBB900672D1B /* AlertView.swift */,
 				07891AF42F93B89E00672D1B /* ContentView.swift */,
-				07891B0C2F93DF2600672D1B /* Untitled.swift */,
+				07891B162F93F29000672D1B /* SupabaseManager.swift */,
+				07891B0D2F93EB4200672D1B /* AgentClient.swift */,
+				07891B0F2F93ED4000672D1B /* ExerciseView.swift */,
+				07891B112F93ED5E00672D1B /* TrendsView.swift */,
+				07891B182F93F4E500672D1B /* ReportView.swift */,
 				07891AFA2F93C2EF00672D1B /* HeatmapRenderer.swift */,
 				07891AFC2F93C30400672D1B /* HeatmapView.swift */,
+				07891B1A2F93F6E500672D1B /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -94,6 +120,13 @@
 				07891AE42F93B85200672D1B /* Pedisense.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		07891B1A2F93F6E500672D1B /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -116,6 +149,12 @@
 			);
 			name = Pedisense;
 			packageProductDependencies = (
+				07891B1B2F93F6E500672D1B /* Auth */,
+				07891B1D2F93F6E500672D1B /* Functions */,
+				07891B1F2F93F6E500672D1B /* PostgREST */,
+				07891B212F93F6E500672D1B /* Realtime */,
+				07891B232F93F6E500672D1B /* Storage */,
+				07891B252F93F6E500672D1B /* Supabase */,
 			);
 			productName = Pedisense;
 			productReference = 07891AE42F93B85200672D1B /* Pedisense.app */;
@@ -145,6 +184,9 @@
 			);
 			mainGroup = 07891ADB2F93B85200672D1B;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				07891B152F93F28500672D1B /* XCRemoteSwiftPackageReference "supabase-swift" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 07891AE52F93B85200672D1B /* Products */;
 			projectDirPath = "";
@@ -177,9 +219,14 @@
 				07891AFB2F93C2F400672D1B /* HeatmapRenderer.swift in Sources */,
 				07891AF92F93C2DE00672D1B /* ColorMap.swift in Sources */,
 				07891B072F93DC0B00672D1B /* BiomechanicsAnalyzer.swift in Sources */,
+				07891B0E2F93EB4600672D1B /* AgentClient.swift in Sources */,
 				07891B032F93CBB900672D1B /* AlertView.swift in Sources */,
+				07891B172F93F29200672D1B /* SupabaseManager.swift in Sources */,
+				07891B122F93ED6100672D1B /* TrendsView.swift in Sources */,
 				07891AF52F93B89E00672D1B /* ContentView.swift in Sources */,
+				07891B192F93F4E700672D1B /* ReportView.swift in Sources */,
 				07891B092F93DD4300672D1B /* CalibrationService.swift in Sources */,
+				07891B102F93ED4300672D1B /* ExerciseView.swift in Sources */,
 				07891AFD2F93C30400672D1B /* HeatmapView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -398,6 +445,50 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		07891B152F93F28500672D1B /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/supabase-community/supabase-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.5.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		07891B1B2F93F6E500672D1B /* Auth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 07891B152F93F28500672D1B /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Auth;
+		};
+		07891B1D2F93F6E500672D1B /* Functions */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 07891B152F93F28500672D1B /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Functions;
+		};
+		07891B1F2F93F6E500672D1B /* PostgREST */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 07891B152F93F28500672D1B /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = PostgREST;
+		};
+		07891B212F93F6E500672D1B /* Realtime */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 07891B152F93F28500672D1B /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Realtime;
+		};
+		07891B232F93F6E500672D1B /* Storage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 07891B152F93F28500672D1B /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Storage;
+		};
+		07891B252F93F6E500672D1B /* Supabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 07891B152F93F28500672D1B /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Supabase;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 07891ADC2F93B85200672D1B /* Project object */;
 }

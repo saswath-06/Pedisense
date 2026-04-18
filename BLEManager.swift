@@ -57,8 +57,14 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         print("Bluetooth state: \(central.state.rawValue)")
         if central.state == .poweredOn {
-            print("Starting scan for Pedisense...")
-            centralManager.scanForPeripherals(withServices: [serviceUUID])
+            // If we restored a connected peripheral, discover its services now
+            if let p = peripheral, p.state == .connected {
+                print("Discovering services on restored peripheral...")
+                p.discoverServices([serviceUUID])
+            } else {
+                print("Starting scan for Pedisense...")
+                centralManager.scanForPeripherals(withServices: [serviceUUID])
+            }
         }
     }
 
@@ -71,7 +77,6 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
                 p.delegate = self
                 if p.state == .connected {
                     isConnected = true
-                    p.discoverServices([serviceUUID])
                     print("Restored connected peripheral: \(p.name ?? "unknown")")
                 }
             }

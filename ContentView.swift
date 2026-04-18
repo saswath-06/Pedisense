@@ -16,6 +16,9 @@ struct ContentView: View {
     var body: some View {
         if !calibration.isCalibrated {
             CalibrationView(ble: ble, calibration: calibration)
+                .onAppear {
+                    calibration.loadSavedCalibration()
+                }
         } else {
             TabView {
                 HeatmapView(ble: ble, calibration: calibration)
@@ -29,25 +32,36 @@ struct ContentView: View {
                         Image(systemName: "waveform.path.ecg")
                         Text("Scan")
                     }
+                
+                ExerciseView(ble: ble, calibration: calibration)
+                    .tabItem {
+                    Image(systemName: "figure.strengthtraining.functional")
+                    Text("Exercise")
+                }
 
                 AlertView(ble: ble, alertEngine: alertEngine)
                     .tabItem {
                         Image(systemName: "exclamationmark.triangle")
                         Text("Alerts")
                     }
-
-                CalibrationView(ble: ble, calibration: calibration)
+                
+                TrendsView()
                     .tabItem {
-                        Image(systemName: "tuningfork")
-                        Text("Calibrate")
+                        Image(systemName: "chart.line.uptrend.xyaxis")
+                        Text("Trends")
                     }
-
+                
+                ReportView(ble: ble, calibration: calibration)
+                    .tabItem {
+                        Image(systemName: "doc.text")
+                        Text("Report")
+                    }
                 DebugView(ble: ble)
                     .tabItem {
                         Image(systemName: "ant")
                         Text("Debug")
                     }
-            }
+                }
             .tint(.cyan)
         }
     }

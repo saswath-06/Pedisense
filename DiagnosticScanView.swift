@@ -1,4 +1,5 @@
 import SwiftUI
+import Combine
 
 struct DiagnosticScanView: View {
     @ObservedObject var ble: BLEManager
@@ -15,10 +16,17 @@ struct DiagnosticScanView: View {
     @State private var averagedLeft: [UInt16] = []
     @State private var averagedRight: [UInt16] = []
 
+    @State private var aiAnalysis: String?
+    @State private var aiExercises: [AgentClient.Exercise] = []
+    @State private var isLoadingAI = false
+    @State private var aiError: String?
+
+    let agentClient = AgentClient()
+
     var bgColor: Color {
         colorScheme == .dark
-            ? Color(red: 0.06, green: 0.06, blue: 0.09)
-            : Color(red: 0.96, green: 0.96, blue: 0.98)
+        ? Color(red: 0.06, green: 0.06, blue: 0.09)
+        : Color(red: 0.96, green: 0.96, blue: 0.98)
     }
 
     var textPrimary: Color {
@@ -31,14 +39,14 @@ struct DiagnosticScanView: View {
 
     var cardBg: Color {
         colorScheme == .dark
-            ? Color.white.opacity(0.04)
-            : Color.black.opacity(0.03)
+        ? Color.white.opacity(0.04)
+        : Color.black.opacity(0.03)
     }
 
     var cardBorder: Color {
         colorScheme == .dark
-            ? Color.white.opacity(0.08)
-            : Color.black.opacity(0.08)
+        ? Color.white.opacity(0.08)
+        : Color.black.opacity(0.08)
     }
 
     var body: some View {
@@ -174,6 +182,8 @@ struct DiagnosticScanView: View {
                 findingsCard(left: left, right: right)
             }
 
+            aiAnalysisSection
+
             Button(action: resetScan) {
                 HStack(spacing: 8) {
                     Image(systemName: "arrow.counterclockwise")
@@ -193,6 +203,107 @@ struct DiagnosticScanView: View {
             .foregroundColor(textPrimary.opacity(0.7))
             .padding(.horizontal, 20)
         }
+    }
+
+    // MARK: - AI Analysis Section
+
+    var aiAnalysisSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Image(systemName: "brain")
+                    .font(.system(size: 14))
+                    .foregroundColor(.purple)
+                Text("AI ANALYSIS")
+                    .font(.system(size: 10, weight: .heavy, design: .monospaced))
+                    .tracking(2)
+                    .foregroundColor(textSecondary)
+                Spacer()
+                Text("Powered by Gemini")
+                    .font(.system(size: 9, design: .monospaced))
+                    .foregroundColor(.purple.opacity(0.6))
+            }
+
+            if isLoadingAI {
+                HStack(spacing: 10) {
+                    ProgressView()
+                        .tint(.purple)
+                    Text("Analyzing your biomechanics...")
+                        .font(.system(size: 13, design: .rounded))
+                        .foregroundColor(textSecondary)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 24)
+            } else if let error = aiError {
+                VStack(spacing: 8) {
+                    Image(systemName: "exclamationmark.triangle")
+                        .font(.system(size: 20))
+                        .foregroundColor(.orange)
+                    Text(error)
+                        .font(.system(size: 12, design: .monospaced))
+                        .foregroundColor(.orange)
+                        .multilineTextAlignment(.center)
+                    Button("Retry") {
+                        fetchAIAnalysis()
+                    }
+                    .font(.system(size: 12, weight: .bold, design: .monospaced))
+                    .foregroundColor(.cyan)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 16)
+            } else if let analysis = aiAnalysis {
+                Text(analysis)
+                    .font(.system(size: 13, design: .rounded))
+                    .foregroundColor(textPrimary.opacity(0.85))
+                    .fixedSize(horizontal: false, vertical: true)
+
+                if !aiExercises.isEmpty {
+                    Divider().opacity(0.2)
+
+                    Text("EXERCISE PLAN")
+                        .font(.system(size: 9, weight: .heavy, design: .monospaced))
+                        .tracking(2)
+                        .foregroundColor(textSecondary)
+
+                    ForEach(aiExercises.indices, id: \.self) { i in
+                        let ex = aiExercises[i]
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(ex.name)
+                                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                                .foregroundColor(textPrimary)
+                            Text(ex.description)
+                                .font(.system(size: 12, design: .rounded))
+                                .foregroundColor(textSecondary)
+                                .fixedSize(horizontal: false, vertical: true)
+                            HStack(spacing: 12) {
+                                Label("\(ex.sets) sets", systemImage: "repeat")
+                                Label(ex.frequency, systemImage: "calendar")
+                            }
+                            .font(.system(size: 10, design: .monospaced))
+                            .foregroundColor(.cyan.opacity(0.7))
+                        }
+                        .padding(10)
+                        .background(
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(Color.purple.opacity(0.04))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .stroke(Color.purple.opacity(0.1), lineWidth: 1)
+                                )
+                        )
+                    }
+                }
+            }
+        }
+        .padding(16)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(cardBg)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Color.purple.opacity(0.2), lineWidth: 1)
+                )
+        )
+        .padding(.horizontal, 20)
     }
 
     // MARK: - Result Cards
@@ -400,6 +511,9 @@ struct DiagnosticScanView: View {
         scanComplete = false
         countdown = 10
         capturedFrames = []
+        aiAnalysis = nil
+        aiExercises = []
+        aiError = nil
 
         timer = Timer.scheduledTimer(withTimeInterval: 0.066, repeats: true) { _ in
             let frame = ble.leftReadings + ble.rightReadings
@@ -459,11 +573,49 @@ struct DiagnosticScanView: View {
         print("Scan complete: \(capturedFrames.count) frames")
         print("Left avg: \(averagedLeft)")
         print("Right avg: \(averagedRight)")
-        if calibration.isCalibrated {
-            print("Using calibrated metrics")
+
+        fetchAIAnalysis()
+    }
+
+    func fetchAIAnalysis() {
+        isLoadingAI = true
+        aiError = nil
+
+        Task {
+            do {
+                let result = try await agentClient.analyzeScan(
+                    left: averagedLeft,
+                    right: averagedRight
+                )
+
+                await MainActor.run {
+                    aiAnalysis = result.analysis
+                    aiExercises = result.exercises
+                    isLoadingAI = false
+                }
+
+                if let left = leftMetrics, let right = rightMetrics {
+                    do {
+                        let _ = try await SupabaseManager.shared.saveScan(
+                            leftReadings: averagedLeft,
+                            rightReadings: averagedRight,
+                            leftMetrics: left,
+                            rightMetrics: right,
+                            aiAnalysis: result.analysis,
+                            exercises: nil
+                        )
+                    } catch {
+                        print("Failed to save scan: \(error)")
+                    }
+                }
+            } catch {
+                await MainActor.run {
+                    aiError = "Could not reach AI agent: \(error.localizedDescription)"
+                    isLoadingAI = false
+                }
+                print("AI analysis error: \(error)")
+            }
         }
-        print("Left arch: \(leftMetrics?.archIndex ?? 0), pron: \(leftMetrics?.pronationIndex ?? 0)")
-        print("Right arch: \(rightMetrics?.archIndex ?? 0), pron: \(rightMetrics?.pronationIndex ?? 0)")
     }
 
     func resetScan() {
@@ -475,6 +627,10 @@ struct DiagnosticScanView: View {
         rightMetrics = nil
         averagedLeft = []
         averagedRight = []
+        aiAnalysis = nil
+        aiExercises = []
+        aiError = nil
+        isLoadingAI = false
     }
 
     func countIssues(left: FootMetrics, right: FootMetrics) -> Int {

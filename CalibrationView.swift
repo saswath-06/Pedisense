@@ -1,5 +1,4 @@
 import SwiftUI
-import Combine
 
 struct CalibrationView: View {
     @ObservedObject var ble: BLEManager
@@ -12,25 +11,10 @@ struct CalibrationView: View {
             : Color(red: 0.96, green: 0.96, blue: 0.98)
     }
 
-    var textPrimary: Color {
-        colorScheme == .dark ? .white : .black
-    }
-
-    var textSecondary: Color {
-        colorScheme == .dark ? .white.opacity(0.4) : .black.opacity(0.45)
-    }
-
-    var cardBg: Color {
-        colorScheme == .dark
-            ? Color.white.opacity(0.04)
-            : Color.black.opacity(0.03)
-    }
-
-    var cardBorder: Color {
-        colorScheme == .dark
-            ? Color.white.opacity(0.08)
-            : Color.black.opacity(0.08)
-    }
+    var textPrimary: Color { colorScheme == .dark ? .white : .black }
+    var textSecondary: Color { colorScheme == .dark ? .white.opacity(0.4) : .black.opacity(0.45) }
+    var cardBg: Color { colorScheme == .dark ? Color.white.opacity(0.04) : Color.black.opacity(0.03) }
+    var cardBorder: Color { colorScheme == .dark ? Color.white.opacity(0.08) : Color.black.opacity(0.08) }
 
     let zones = ["1st Met", "5th Met", "Midfoot", "Med Heel", "Lat Heel"]
 
@@ -39,7 +23,6 @@ struct CalibrationView: View {
             bgColor.ignoresSafeArea()
 
             VStack(spacing: 20) {
-                // Header
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("PEDISENSE")
@@ -88,8 +71,6 @@ struct CalibrationView: View {
         }
     }
 
-    // MARK: - Ready
-
     var readyState: some View {
         VStack(spacing: 20) {
             Spacer().frame(height: 30)
@@ -108,7 +89,11 @@ struct CalibrationView: View {
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 40)
 
-            Button(action: { calibration.startCalibration(ble: ble) }) {
+            Button(action: {
+                let cal = calibration
+                let b = ble
+                cal.startCalibration(ble: b)
+            }) {
                 HStack(spacing: 8) {
                     Image(systemName: "tuningfork")
                         .font(.system(size: 16))
@@ -135,8 +120,6 @@ struct CalibrationView: View {
             }
         }
     }
-
-    // MARK: - Calibrating
 
     var calibratingState: some View {
         VStack(spacing: 24) {
@@ -170,25 +153,37 @@ struct CalibrationView: View {
         }
     }
 
-    // MARK: - Calibrated
-
     var calibratedState: some View {
         VStack(spacing: 16) {
-            // Baseline values
             baselineCard(title: "LEFT BASELINE", baseline: calibration.leftBaseline)
             baselineCard(title: "RIGHT BASELINE", baseline: calibration.rightBaseline)
 
-            // Live normalized values
             if ble.isConnected {
+                let leftValues = ble.leftReadings
+                let rightValues = ble.rightReadings
+                let leftBase = calibration.leftBaseline
+                let rightBase = calibration.rightBaseline
+
+                let leftNorm: [Double] = zip(leftValues, leftBase).map { reading, base in
+                    guard base > 0 else { return 0 }
+                    return (Double(reading) / base) * 100.0
+                }
+                let rightNorm: [Double] = zip(rightValues, rightBase).map { reading, base in
+                    guard base > 0 else { return 0 }
+                    return (Double(reading) / base) * 100.0
+                }
+
                 normalizedCard(
                     title: "LIVE (% OF BASELINE)",
-                    leftNorm: calibration.normalizedLeft(ble.leftReadings),
-                    rightNorm: calibration.normalizedRight(ble.rightReadings)
+                    leftNorm: leftNorm,
+                    rightNorm: rightNorm
                 )
             }
 
-            // Recalibrate button
-            Button(action: { calibration.reset() }) {
+            Button(action: {
+                let cal = calibration
+                cal.reset()
+            }) {
                 HStack(spacing: 8) {
                     Image(systemName: "arrow.counterclockwise")
                         .font(.system(size: 14))

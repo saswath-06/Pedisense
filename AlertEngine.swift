@@ -83,6 +83,17 @@ class AlertEngine: ObservableObject {
                         }
 
                         sendNotification(zone: zone, foot: foot)
+                        // Save to Supabase
+                        Task {
+                            do {
+                                try await SupabaseManager.shared.saveAlert(
+                                    zone: zone, foot: foot, duration: elapsed
+                                )
+                            } catch {
+                                print("Failed to save alert: \(error)")
+                            }
+                        }
+
                         zonePressureTimers.removeValue(forKey: i)
                     }
                 } else {
