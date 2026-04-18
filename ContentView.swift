@@ -16,9 +16,6 @@ struct ContentView: View {
     var body: some View {
         if !calibration.isCalibrated {
             CalibrationView(ble: ble, calibration: calibration)
-                .onAppear {
-                    calibration.loadSavedCalibration()
-                }
         } else {
             TabView {
                 HeatmapView(ble: ble, calibration: calibration)
@@ -32,36 +29,42 @@ struct ContentView: View {
                         Image(systemName: "waveform.path.ecg")
                         Text("Scan")
                     }
-                
+
                 ExerciseView(ble: ble, calibration: calibration)
                     .tabItem {
-                    Image(systemName: "figure.strengthtraining.functional")
-                    Text("Exercise")
-                }
+                        Image(systemName: "figure.strengthtraining.functional")
+                        Text("Exercise")
+                    }
 
                 AlertView(ble: ble, alertEngine: alertEngine)
                     .tabItem {
                         Image(systemName: "exclamationmark.triangle")
                         Text("Alerts")
                     }
-                
+
                 TrendsView()
                     .tabItem {
                         Image(systemName: "chart.line.uptrend.xyaxis")
                         Text("Trends")
                     }
-                
+
                 ReportView(ble: ble, calibration: calibration)
                     .tabItem {
                         Image(systemName: "doc.text")
                         Text("Report")
+                    }
+
+                CalibrationView(ble: ble, calibration: calibration)
+                    .tabItem {
+                        Image(systemName: "tuningfork")
+                        Text("Calibrate")
                     }
                 DebugView(ble: ble)
                     .tabItem {
                         Image(systemName: "ant")
                         Text("Debug")
                     }
-                }
+            }
             .tint(.cyan)
         }
     }
@@ -79,21 +82,10 @@ struct DebugView: View {
             : Color(red: 0.96, green: 0.96, blue: 0.98)
     }
 
-    var textColor: Color {
-        colorScheme == .dark ? .white.opacity(0.8) : .black.opacity(0.8)
-    }
-
-    var labelColor: Color {
-        colorScheme == .dark ? .white.opacity(0.5) : .black.opacity(0.5)
-    }
-
-    var headerColor: Color {
-        colorScheme == .dark ? .white.opacity(0.35) : .black.opacity(0.35)
-    }
-
-    var barBg: Color {
-        colorScheme == .dark ? Color.white.opacity(0.06) : Color.black.opacity(0.06)
-    }
+    var textColor: Color { colorScheme == .dark ? .white.opacity(0.8) : .black.opacity(0.8) }
+    var labelColor: Color { colorScheme == .dark ? .white.opacity(0.5) : .black.opacity(0.5) }
+    var headerColor: Color { colorScheme == .dark ? .white.opacity(0.35) : .black.opacity(0.35) }
+    var barBg: Color { colorScheme == .dark ? Color.white.opacity(0.06) : Color.black.opacity(0.06) }
 
     var body: some View {
         ZStack {
