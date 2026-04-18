@@ -6,13 +6,52 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		07891AF32F93B87B00672D1B /* BLEManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07891AF22F93B87400672D1B /* BLEManager.swift */; };
+		07891AF52F93B89E00672D1B /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07891AF42F93B89E00672D1B /* ContentView.swift */; };
+		07891AF92F93C2DE00672D1B /* ColorMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07891AF82F93C2DB00672D1B /* ColorMap.swift */; };
+		07891AFB2F93C2F400672D1B /* HeatmapRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07891AFA2F93C2EF00672D1B /* HeatmapRenderer.swift */; };
+		07891AFD2F93C30400672D1B /* HeatmapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07891AFC2F93C30400672D1B /* HeatmapView.swift */; };
+		07891B002F93CB9800672D1B /* AlertEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07891AFF2F93CB9400672D1B /* AlertEngine.swift */; };
+		07891B032F93CBB900672D1B /* AlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07891B022F93CBB900672D1B /* AlertView.swift */; };
+		07891B052F93DBE300672D1B /* DiagnosticScanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07891B042F93DBDD00672D1B /* DiagnosticScanView.swift */; };
+		07891B072F93DC0B00672D1B /* BiomechanicsAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07891B062F93DC0300672D1B /* BiomechanicsAnalyzer.swift */; };
+		07891B092F93DD4300672D1B /* CalibrationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07891B082F93DD4000672D1B /* CalibrationService.swift */; };
+		07891B0B2F93DD5600672D1B /* CalibrationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07891B0A2F93DD5300672D1B /* CalibrationView.swift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		07891AE42F93B85200672D1B /* Pedisense.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Pedisense.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		07891AF22F93B87400672D1B /* BLEManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLEManager.swift; sourceTree = "<group>"; };
+		07891AF42F93B89E00672D1B /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		07891AF82F93C2DB00672D1B /* ColorMap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorMap.swift; sourceTree = "<group>"; };
+		07891AFA2F93C2EF00672D1B /* HeatmapRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeatmapRenderer.swift; sourceTree = "<group>"; };
+		07891AFC2F93C30400672D1B /* HeatmapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeatmapView.swift; sourceTree = "<group>"; };
+		07891AFF2F93CB9400672D1B /* AlertEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertEngine.swift; sourceTree = "<group>"; };
+		07891B022F93CBB900672D1B /* AlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertView.swift; sourceTree = "<group>"; };
+		07891B042F93DBDD00672D1B /* DiagnosticScanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiagnosticScanView.swift; sourceTree = "<group>"; };
+		07891B062F93DC0300672D1B /* BiomechanicsAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiomechanicsAnalyzer.swift; sourceTree = "<group>"; };
+		07891B082F93DD4000672D1B /* CalibrationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalibrationService.swift; sourceTree = "<group>"; };
+		07891B0A2F93DD5300672D1B /* CalibrationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalibrationView.swift; sourceTree = "<group>"; };
+		07891B0C2F93DF2600672D1B /* Untitled.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Untitled.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		07891AF72F93BBF400672D1B /* Exceptions for "Pedisense" folder in "Pedisense" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 07891AE32F93B85200672D1B /* Pedisense */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		07891AE62F93B85200672D1B /* Pedisense */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				07891AF72F93BBF400672D1B /* Exceptions for "Pedisense" folder in "Pedisense" target */,
+			);
 			path = Pedisense;
 			sourceTree = "<group>";
 		};
@@ -34,6 +73,18 @@
 			children = (
 				07891AE62F93B85200672D1B /* Pedisense */,
 				07891AE52F93B85200672D1B /* Products */,
+				07891AF22F93B87400672D1B /* BLEManager.swift */,
+				07891B042F93DBDD00672D1B /* DiagnosticScanView.swift */,
+				07891B082F93DD4000672D1B /* CalibrationService.swift */,
+				07891B0A2F93DD5300672D1B /* CalibrationView.swift */,
+				07891B062F93DC0300672D1B /* BiomechanicsAnalyzer.swift */,
+				07891AF82F93C2DB00672D1B /* ColorMap.swift */,
+				07891AFF2F93CB9400672D1B /* AlertEngine.swift */,
+				07891B022F93CBB900672D1B /* AlertView.swift */,
+				07891AF42F93B89E00672D1B /* ContentView.swift */,
+				07891B0C2F93DF2600672D1B /* Untitled.swift */,
+				07891AFA2F93C2EF00672D1B /* HeatmapRenderer.swift */,
+				07891AFC2F93C30400672D1B /* HeatmapView.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -119,6 +170,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				07891B052F93DBE300672D1B /* DiagnosticScanView.swift in Sources */,
+				07891AF32F93B87B00672D1B /* BLEManager.swift in Sources */,
+				07891B0B2F93DD5600672D1B /* CalibrationView.swift in Sources */,
+				07891B002F93CB9800672D1B /* AlertEngine.swift in Sources */,
+				07891AFB2F93C2F400672D1B /* HeatmapRenderer.swift in Sources */,
+				07891AF92F93C2DE00672D1B /* ColorMap.swift in Sources */,
+				07891B072F93DC0B00672D1B /* BiomechanicsAnalyzer.swift in Sources */,
+				07891B032F93CBB900672D1B /* AlertView.swift in Sources */,
+				07891AF52F93B89E00672D1B /* ContentView.swift in Sources */,
+				07891B092F93DD4300672D1B /* CalibrationService.swift in Sources */,
+				07891AFD2F93C30400672D1B /* HeatmapView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -256,6 +318,8 @@
 				DEVELOPMENT_TEAM = V5BN72QP9A;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Pedisense/Info.plist;
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Pedisense needs Bluetooth to connect to your insole sensors.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -288,6 +352,8 @@
 				DEVELOPMENT_TEAM = V5BN72QP9A;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Pedisense/Info.plist;
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Pedisense needs Bluetooth to connect to your insole sensors.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
