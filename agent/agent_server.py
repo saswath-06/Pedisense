@@ -1,12 +1,12 @@
 import json
 import os
-import google.generativeai as genai
+from google import genai
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 
 load_dotenv()
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+
 app = FastAPI()
 
 app.add_middleware(
@@ -16,9 +16,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# --- Tool Functions ---
+client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
-def analyze_pressure(left_readings: list[int], right_readings: list[int]) -> dict:
+
+def analyze_pressure(left_readings, right_readings):
     zones = ["1st_met", "5th_met", "med_midfoot", "med_heel", "lat_heel"]
 
     def compute(readings, side):
@@ -38,66 +39,54 @@ def analyze_pressure(left_readings: list[int], right_readings: list[int]) -> dic
     return {"left": compute(left_readings, "left"), "right": compute(right_readings, "right")}
 
 
-def generate_rehab_plan(arch_index_left: float, arch_index_right: float,
-                        pronation_index_left: float, pronation_index_right: float) -> list:
+def generate_rehab_plan(metrics):
     exercises = []
+    left = metrics["left"]
+    right = metrics["right"]
 
-    if arch_index_left > 0.12 or arch_index_right > 0.12:
+    if left["arch_index"] > 0.12 or right["arch_index"] > 0.12:
         exercises.append({
             "name": "Short Foot Exercise",
-            "description": "Sit with feet flat. Without curling toes, shorten your foot by pulling the ball toward the heel. Hold 5 seconds.",
-            "sets": 3, "reps": 10, "frequency": "2x daily",
-            "target_zone": "medial midfoot",
-            "biofeedback_cue": "Watch medial midfoot sensor decrease as arch activates"
+            "description": "Sit with feet flat on the floor. Without curling your toes, try to shorten your foot by pulling the ball of the foot toward the heel, lifting the arch. Hold for 5 seconds.",
+            "sets": 3, "reps": 10, "frequency": "2x daily"
         })
         exercises.append({
             "name": "Towel Scrunches",
-            "description": "Place towel on floor, scrunch toward you using only toes. Full extension between reps.",
+            "description": "Place a towel on the floor. Using only your toes, scrunch the towel toward you. Fully extend toes between each rep.",
             "sets": 3, "reps": 15, "frequency": "daily"
         })
         exercises.append({
             "name": "Heel Raises",
-            "description": "Stand on both feet, slowly rise onto the balls of your feet, hold 2 seconds, lower slowly.",
-            "sets": 3, "reps": 12, "frequency": "daily",
-            "biofeedback_cue": "Weight should shift to 1st metatarsal zone during raise"
+            "description": "Stand with feet hip-width apart. Slowly rise onto your toes, hold for 2 seconds at the top, then lower back down.",
+            "sets": 3, "reps": 12, "frequency": "daily"
         })
 
-    if pronation_index_left > 1.3 or pronation_index_right > 1.3:
+    if left["pronation_index"] > 1.3 or right["pronation_index"] > 1.3:
         exercises.append({
-            "name": "Single-Leg Balance (Lateral Focus)",
-            "description": "Stand on one foot. Focus on keeping weight centered or slightly lateral. Use heel centering metric as biofeedback.",
-            "sets": 3, "reps": "30 sec holds", "frequency": "daily",
-            "biofeedback_cue": "Heel centering should trend toward 0.5"
+            "name": "Single-Leg Balance",
+            "description": "Stand on one foot. Focus on keeping your weight centered or slightly toward the outer edge.",
+            "sets": 3, "reps": "30 second holds", "frequency": "daily"
         })
         exercises.append({
             "name": "Lateral Band Walks",
-            "description": "Place resistance band around ankles. Walk sideways 10 steps each direction. Keep toes forward.",
-            "sets": 3, "reps": "10 steps each direction", "frequency": "daily"
+            "description": "Place a resistance band around both ankles. Take 10 steps sideways in each direction, keeping tension on the band.",
+            "sets": 3, "reps": "10 steps each direction", "frequency": "3x weekly"
         })
 
     if not exercises:
         exercises.append({
             "name": "Maintenance: Calf Raises",
-            "description": "Your biomechanics look healthy. Maintain with bilateral calf raises for ankle stability.",
+            "description": "Your biomechanics look healthy. Maintain ankle stability with bilateral calf raises.",
             "sets": 3, "reps": 15, "frequency": "3x weekly"
         })
 
     return exercises
 
 
-def compare_to_baseline(current_arch: float, baseline_arch: float,
-                        current_pron: float, baseline_pron: float) -> dict:
-    arch_change = current_arch - baseline_arch
-    pron_change = current_pron - baseline_pron
-    return {
-        "arch_index_change": round(arch_change, 4),
-        "arch_direction": "improving" if arch_change < 0 else "worsening" if arch_change > 0 else "stable",
-        "pronation_change": round(pron_change, 4),
-        "pronation_direction": "improving" if pron_change < 0 else "worsening" if pron_change > 0 else "stable"
-    }
+@app.get("/health")
+async def health():
+    return {"status": "ok", "service": "pedisense-agent"}
 
-
-# --- Endpoints ---
 
 @app.post("/analyze")
 async def analyze(request: Request):
@@ -130,22 +119,24 @@ RIGHT FOOT:
 Generated rehabilitation plan:
 {json.dumps(rehab, indent=2)}
 
-Provide a clinical interpretation of these results. Be specific, use the actual numbers, and write in plain language a patient can understand. Structure your response exactly as:
+Provide a clinical interpretation. Be specific, use actual numbers, write in plain language a patient can understand. Structure as:
 
 ## Summary
-Two sentences summarizing the overall findings.
+Two sentences summarizing findings.
 
 ## Findings
-For each detected issue, explain what the metric means, what the patient's value is, what normal looks like, and what this means for their daily life.
+For each issue: what the metric means, patient's value, normal range, daily life impact.
 
 ## Recommended Exercises
-List each exercise from the rehab plan above with a brief explanation of why it targets the specific issue found.
+Each exercise from the rehab plan with why it targets the issue.
 
 ## For Your Podiatrist
-A brief paragraph the patient can share with their podiatrist summarizing the key metrics."""
+Brief paragraph with key metrics in professional terminology."""
 
-        model = genai.GenerativeModel("gemini-2.0-flash")
-        response = model.generate_content(prompt)
+        response = client.models.generate_content(
+            model="gemini-2.0-flash",
+            contents=prompt
+        )
 
         return {
             "analysis": response.text,
@@ -154,4 +145,35 @@ A brief paragraph the patient can share with their podiatrist summarizing the ke
         }
     except Exception as e:
         print(f"ERROR in /analyze: {e}")
-        return {"error": str(e)}, 500
+        return {"error": str(e)}
+
+
+@app.post("/report")
+async def report(request: Request):
+    try:
+        body = await request.json()
+
+        prompt = f"""Generate a clinical-style podiatry report based on this Pedisense smart insole session data.
+
+Session data:
+{json.dumps(body, indent=2)}
+
+Structure as a formal medical document with:
+1. Patient Assessment Summary
+2. Plantar Pressure Distribution Analysis
+3. Biomechanical Findings
+4. Risk Assessment
+5. Recommended Interventions
+6. Follow-up Recommendations
+
+Use professional medical terminology but keep it readable."""
+
+        response = client.models.generate_content(
+            model="gemini-2.0-flash",
+            contents=prompt
+        )
+
+        return {"report": response.text}
+    except Exception as e:
+        print(f"ERROR in /report: {e}")
+        return {"error": str(e)}
