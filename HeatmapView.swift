@@ -98,7 +98,7 @@ struct HeatmapView: View {
                     FootHeatmap(
                         values: normalizedValues(ble.leftReadings, baseline: calibration.leftBaseline),
                         positions: HeatmapRenderer.leftSensorPositions,
-                        isLeft: true,
+                        isLeft: false,
                         resolution: gridResolution,
                         label: "LEFT",
                         outlineColor: footOutline,
@@ -110,7 +110,7 @@ struct HeatmapView: View {
                     FootHeatmap(
                         values: normalizedValues(ble.rightReadings, baseline: calibration.rightBaseline),
                         positions: HeatmapRenderer.rightSensorPositions,
-                        isLeft: false,
+                        isLeft: true,
                         resolution: gridResolution,
                         label: "RIGHT",
                         outlineColor: footOutline,
