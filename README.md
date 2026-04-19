@@ -2,7 +2,7 @@
 
 **Smart insoles that map your foot pressure in real-time, detect biomechanical issues, and provide AI-powered rehabilitation guidance.**
 
-Clinical pressure mats cost $15,000. We built a directionally accurate version for under $150 with an AI podiatrist powered by Gemini.
+Clinical pressure mats cost $15,000. We built a directionally accurate version for under $80 with an AI podiatrist powered by Gemini.
 
 ---
 
@@ -129,16 +129,16 @@ S3/S8 (medial midfoot) is the key flat foot sensor. If this zone bears significa
 |------|-----|------|
 | ESP32-WROOM-32 Dev Board | 1 | $10 |
 | CD74HC4067 16-ch Analog Mux | 1 | $6 |
-| FSR 402 (0-10kg round) | 10 | $80-120 |
+| FSR 402 (0-10kg round) | 10 | $30 |
 | 10kΩ resistors | 10 | $3 |
 | Coin vibration motors (3V) | 2 | $4 |
 | 2N2222 NPN transistors | 2 | $2 |
 | 1kΩ resistors (motor base) | 2 | $1 |
-| Breadboard + jumper wires | - | $12 |
-| Sandals (sensor mounting) | 1 pair | $8 |
+| Breadboard + jumper wires | - | $8 |
+| Sandals (sensor mounting) | 1 pair | $3 |
 | USB battery bank | 1 | $10 |
 
-**Total: ~$140-170**
+**Total: ~$77 CAD**
 
 ### Wiring
 
@@ -245,22 +245,6 @@ uvicorn agent_server:app --host 0.0.0.0 --port 8000
 
 ---
 
-## Demo Script (3 minutes)
-
-**Minute 1 — Hook + Live Demo**
-
-"130,000 Americans lose a foot to diabetes every year because they can't feel the pressure that causes ulcers. Clinical pressure mats cost $15,000. Pedisense costs $150, it vibrates to warn you, and it has an AI podiatrist built in."
-
-**Minute 2 — Personal Story + AI Analysis**
-
-"I have flat feet. Both my parents are diabetic." Step on the sensors. Midfoot zone lights up. Tap Scan. AI analysis appears. Switch to Exercise mode. Score responds in real-time.
-
-**Minute 3 — Diabetic Monitoring + Report**
-
-Stand still. Alert fires, insole vibrates. "For a neuropathy patient, they didn't feel that pressure. But they still feel vibration." Generate and share a clinical report.
-
----
-
 ## Personal Note
 
 I have flat feet. Both my parents are diabetic. This project exists because I wanted a way to monitor my own arch collapse and eventually protect my parents' feet from the pressure injuries they can't feel. Pedisense is that tool.
@@ -273,10 +257,4 @@ HackPrinceton Spring 2026
 
 ## Team
 
-Saswath Yeshwanth
-
-## Prizes Targeted
-
-- Best Hardware Hack
-- Healthcare Track
-- MLH Best Use of Gemini API
+Saswath Yeshwanth & Harsukrit Pall
