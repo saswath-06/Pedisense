@@ -49,10 +49,16 @@ class CalibrationService: ObservableObject {
 
         isCalibrated = true
 
+        // Save locally
+        UserDefaults.standard.set(leftBaseline, forKey: "pedisense_left_baseline")
+        UserDefaults.standard.set(rightBaseline, forKey: "pedisense_right_baseline")
+        UserDefaults.standard.set(true, forKey: "pedisense_calibrated")
+
         print("Calibration complete: \(frames.count) frames")
         print("Left baseline: \(leftBaseline.map { String(format: "%.0f", $0) })")
         print("Right baseline: \(rightBaseline.map { String(format: "%.0f", $0) })")
 
+        // Also save to Supabase for cloud backup
         Task {
             do {
                 try await SupabaseManager.shared.saveCalibration(
@@ -60,8 +66,20 @@ class CalibrationService: ObservableObject {
                     rightBaseline: rightBaseline
                 )
             } catch {
-                print("Failed to save calibration: \(error)")
+                print("Failed to save calibration to Supabase: \(error)")
             }
+        }
+    }
+
+    func loadSavedCalibration() {
+        guard UserDefaults.standard.bool(forKey: "pedisense_calibrated") else { return }
+        if let left = UserDefaults.standard.array(forKey: "pedisense_left_baseline") as? [Double],
+           let right = UserDefaults.standard.array(forKey: "pedisense_right_baseline") as? [Double],
+           left.count == 5, right.count == 5 {
+            leftBaseline = left
+            rightBaseline = right
+            isCalibrated = true
+            print("Loaded calibration from UserDefaults")
         }
     }
 
@@ -74,6 +92,7 @@ class CalibrationService: ObservableObject {
         frames = []
         leftBaseline = Array(repeating: 0, count: 5)
         rightBaseline = Array(repeating: 0, count: 5)
+        UserDefaults.standard.set(false, forKey: "pedisense_calibrated")
     }
 
     func normalizedLeft(_ readings: [UInt16]) -> [Double] {

@@ -16,6 +16,9 @@ struct ContentView: View {
     var body: some View {
         if !calibration.isCalibrated {
             CalibrationView(ble: ble, calibration: calibration)
+                .onAppear() {
+                    calibration.loadSavedCalibration()
+                }
         } else {
             TabView {
                 HeatmapView(ble: ble, calibration: calibration)

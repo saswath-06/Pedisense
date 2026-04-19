@@ -134,7 +134,7 @@ Each exercise from the rehab plan with why it targets the issue.
 Brief paragraph with key metrics in professional terminology."""
 
         response = client.models.generate_content(
-            model="gemini-2.0-flash",
+            model="gemini-2.5-flash",
             contents=prompt
         )
 
