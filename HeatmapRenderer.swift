@@ -7,16 +7,16 @@ struct HeatmapRenderer {
     }
 
     static let leftSensorPositions: [SensorPosition] = [
-        SensorPosition(x: 0.70, y: 0.20),
-        SensorPosition(x: 0.35, y: 0.15),
+        SensorPosition(x: 0.70, y: 0.15),
+        SensorPosition(x: 0.35, y: 0.20),
         SensorPosition(x: 0.30, y: 0.50),
         SensorPosition(x: 0.65, y: 0.85),
         SensorPosition(x: 0.35, y: 0.85),
     ]
 
     static let rightSensorPositions: [SensorPosition] = [
-        SensorPosition(x: 0.30, y: 0.20),
-        SensorPosition(x: 0.65, y: 0.15),
+        SensorPosition(x: 0.30, y: 0.15),
+        SensorPosition(x: 0.65, y: 0.20),
         SensorPosition(x: 0.70, y: 0.50),
         SensorPosition(x: 0.35, y: 0.85),
         SensorPosition(x: 0.65, y: 0.85),
