@@ -247,7 +247,7 @@ uvicorn agent_server:app --host 0.0.0.0 --port 8000
 
 ## Personal Note
 
-I have flat feet. Both my parents are diabetic. This project exists because I wanted a way to monitor my own arch collapse and eventually protect my parents' feet from the pressure injuries they can't feel. Pedisense is that tool.
+We have flat feet. Both our parents are diabetic. This project exists because we wanted a way to monitor our own arch collapse and eventually protect our parents' feet from the pressure injuries they can't feel. Pedisense is that tool.
 
 ---
 
