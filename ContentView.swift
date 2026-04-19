@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct ContentView: View {
+    @StateObject private var auth = AuthManager()
     @StateObject private var ble: BLEManager
     @StateObject private var alertEngine: AlertEngine
     @StateObject private var calibration = CalibrationService()
@@ -14,9 +15,11 @@ struct ContentView: View {
     }
 
     var body: some View {
-        if !calibration.isCalibrated {
+        if !auth.isLoggedIn {
+            AuthView(auth: auth)
+        } else if !calibration.isCalibrated {
             CalibrationView(ble: ble, calibration: calibration)
-                .onAppear() {
+                .onAppear {
                     calibration.loadSavedCalibration()
                 }
         } else {
@@ -55,6 +58,12 @@ struct ContentView: View {
                     .tabItem {
                         Image(systemName: "doc.text")
                         Text("Report")
+                    }
+
+                ProfileView(auth: auth, calibration: calibration)
+                    .tabItem {
+                        Image(systemName: "person.circle")
+                        Text("Profile")
                     }
 
                 CalibrationView(ble: ble, calibration: calibration)

@@ -98,7 +98,7 @@ async def analyze(request: Request):
         metrics = analyze_pressure(left, right)
         rehab = generate_rehab_plan(metrics)
 
-        prompt = f"""You are a biomechanical analysis agent for Pedisense, a smart insole system that uses 10 force-sensing resistors (5 per foot) to map plantar pressure distribution in real-time.
+        prompt = f"""You are a biomechanical analysis agent for Pedisense, a smart insole system that uses 10 force-sensing resistors (5 per foot) to map plantar pressure distribution in real-time. Do NOT use any markdown formatting. No headers, no bold, no bullet points, no hashtags. Write in plain paragraphs with line breaks between sections. Use ALL CAPS for section titles instead of markdown headers.
 
 Here are the computed metrics from a 10-second diagnostic scan:
 
@@ -131,7 +131,9 @@ For each issue: what the metric means, patient's value, normal range, daily life
 Each exercise from the rehab plan with why it targets the issue.
 
 ## For Your Podiatrist
-Brief paragraph with key metrics in professional terminology."""
+A brief paragraph the patient can share with their podiatrist summarizing the key metrics.
+
+Do NOT use any markdown formatting. No headers, no bold, no bullet points, no hashtags. Write in plain paragraphs with line breaks between sections. Use ALL CAPS for section titles instead of markdown headers."""
 
         response = client.models.generate_content(
             model="gemini-2.5-flash",
@@ -166,7 +168,9 @@ Structure as a formal medical document with:
 5. Recommended Interventions
 6. Follow-up Recommendations
 
-Use professional medical terminology but keep it readable."""
+Use professional medical terminology but keep it readable. Use professional medical terminology but keep it readable.
+
+Do NOT use any markdown formatting. No headers, no bold, no bullet points, no hashtags. Write in plain paragraphs with line breaks between sections. Use ALL CAPS for section titles instead of markdown headers."""
 
         response = client.models.generate_content(
             model="gemini-2.5-flash",

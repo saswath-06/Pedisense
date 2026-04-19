@@ -1,10 +1,3 @@
-//
-//  SupabaseManager.swift
-//  Pedisense
-//
-//  Created by Harry Pall on 2026-04-18.
-//
-
 import Foundation
 import Supabase
 
@@ -13,14 +6,23 @@ class SupabaseManager {
 
     let client: SupabaseClient
 
-    // Device ID persists across app launches as anonymous identity
+    private var _userId: String?
+
     var deviceId: String {
+        if let userId = _userId {
+            return userId
+        }
         if let existing = UserDefaults.standard.string(forKey: "pedisense_device_id") {
             return existing
         }
         let newId = UUID().uuidString
         UserDefaults.standard.set(newId, forKey: "pedisense_device_id")
         return newId
+    }
+
+    func updateUserId(_ userId: String) {
+        _userId = userId
+        print("SupabaseManager using auth user ID: \(userId)")
     }
 
     private init() {

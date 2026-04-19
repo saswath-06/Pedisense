@@ -16,7 +16,7 @@ Pedisense is a hardware + software system with three components:
 
 **Instrumented insoles** with 10 FSR 402 sensors (5 per foot) and haptic vibration motors, wired through a CD74HC4067 analog multiplexer to an ESP32-WROOM-32 microcontroller. Data streams over BLE at 15Hz.
 
-**iOS app** built in SwiftUI with real-time pressure heatmaps, diagnostic scanning, exercise biofeedback with live scoring, sustained pressure alerts with haptic feedback and notifications, longitudinal trend tracking, and AI-powered clinical reports.
+**iOS app** built in SwiftUI with user authentication (Google Sign-In + email/password via Supabase Auth), real-time pressure heatmaps, diagnostic scanning, exercise biofeedback with live scoring, sustained pressure alerts with haptic feedback and push notifications, longitudinal trend tracking from real scan history, and AI-powered clinical reports.
 
 **Gemini-powered AI agent** deployed on Railway that interprets raw sensor data, computes biomechanical metrics, generates plain-language clinical findings, builds personalized rehab plans, and produces shareable reports for podiatrists.
 
@@ -56,11 +56,15 @@ Pedisense is a hardware + software system with three components:
                       │ ▲
 ┌─────────────────────┼─┼─────────────────────────────────────────────┐
 │                     ▼ │          iOS APP (SwiftUI)                  │
+│                                                                     │
+│  Auth: Google Sign-In + Email/Password (Supabase Auth)             │
+│  ↓                                                                  │
 │  BLEManager → CalibrationService → BiomechanicsAnalyzer            │
 │                                  → AlertEngine → Motor Buzz        │
 │                                  → AgentClient → Gemini API        │
+│                                  → SupabaseManager → Cloud Sync    │
 │                                                                     │
-│  Views: Heatmap │ Scan │ Exercise │ Alerts │ Trends │ Report        │
+│  Tabs: Heatmap │ Scan │ Exercise │ Alerts │ Trends │ Report │ Profile│
 └─────────────────────┼───────────────────────────────────────────────┘
                       │ HTTPS
 ┌─────────────────────┼───────────────────────────────────────────────┐
@@ -72,9 +76,10 @@ Pedisense is a hardware + software system with three components:
                       │
 ┌─────────────────────┼───────────────────────────────────────────────┐
 │                     ▼         DATA (Supabase)                       │
+│  Auth: Google OAuth + Email/Password                                │
 │  Tables: calibrations, scans, reports, alerts                       │
-│  Anonymous device-based identity                                    │
-│  All scan data persists across sessions                              │
+│  User-scoped data via authenticated user ID                         │
+│  All data persists across sessions and devices                      │
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -105,7 +110,7 @@ Pedisense is a hardware + software system with three components:
         └─────────┘                  └─────────┘
 ```
 
-S3/S8 (medial midfoot) is the key flat foot sensor. If this zone bears significant load, the arch is collapsed. The haptic motors sit next to S3/S8 in the arch area.
+S3/S8 (medial midfoot) is the key flat foot sensor. If this zone bears significant load, the arch is collapsed. The haptic motors sit next to S3/S8 in the arch area, where neuropathy patients are most likely to feel vibration feedback.
 
 **Biomechanical metrics derived:**
 
@@ -130,7 +135,7 @@ S3/S8 (medial midfoot) is the key flat foot sensor. If this zone bears significa
 | 2N2222 NPN transistors | 2 | $2 |
 | 1kΩ resistors (motor base) | 2 | $1 |
 | Breadboard + jumper wires | - | $12 |
-| Foam insoles or sandals | 1 pair | $8 |
+| Sandals (sensor mounting) | 1 pair | $8 |
 | USB battery bank | 1 | $10 |
 
 **Total: ~$140-170**
@@ -146,110 +151,58 @@ D5  (GPIO 5)  → MUX S1
 D18 (GPIO 18) → MUX S2
 D19 (GPIO 19) → MUX S3
 D25 (GPIO 25) → Left motor driver (via 1kΩ → 2N2222 base)
-D26 (GPIO 26) → Right motor driver (via 1kΩ → 2N2222 base)
+D27 (GPIO 27) → Right motor driver (via 1kΩ → 2N2222 base)
 3V3           → MUX VCC, FSR rail, motor rail
 GND           → MUX GND, MUX EN, resistors, motor emitters
 
-FSR VOLTAGE DIVIDERS (x10)
-──────────────────────────
-3.3V → FSR → junction → 10kΩ → GND
-Junction wire → MUX channel C0-C9
-
-MOTOR DRIVER (x2)
-─────────────────
-3.3V → Motor+ → Motor- → 2N2222 Collector
-GPIO → 1kΩ → 2N2222 Base
-2N2222 Emitter → GND
+MUX CHANNEL MAPPING
+────────────────────
+C0-C4: Left foot (1st met, 5th met, med midfoot, med heel, lat heel)
+C5-C9: Right foot (same order)
 ```
 
 ---
 
 ## Software
 
-### Repo Structure
+### App Flow
 
-```
-Pedisense/
-├── README.md
-├── firmware/
-│   └── pedisense.ino              # ESP32 Arduino firmware
-├── agent/
-│   ├── agent_server.py            # FastAPI + Gemini 2.5 Flash
-│   ├── requirements.txt
-│   └── Procfile                   # Railway deployment
-├── ios/
-│   └── Pedisense/
-│       ├── PedisenseApp.swift
-│       ├── ContentView.swift      # Tab routing + calibration gate
-│       ├── BLEManager.swift       # CoreBluetooth + motor control
-│       ├── CalibrationService.swift
-│       ├── CalibrationView.swift
-│       ├── HeatmapView.swift      # Real-time pressure heatmap
-│       ├── HeatmapRenderer.swift  # IDW interpolation + foot paths
-│       ├── ColorMap.swift         # Pressure-to-color mapping
-│       ├── DiagnosticScanView.swift
-│       ├── BiomechanicsAnalyzer.swift
-│       ├── ExerciseView.swift     # Live biofeedback with scoring
-│       ├── AlertEngine.swift      # Sustained pressure monitoring
-│       ├── AlertView.swift
-│       ├── TrendsView.swift       # Longitudinal charts (Swift Charts)
-│       ├── ReportView.swift       # AI-generated clinical reports
-│       ├── AgentClient.swift      # Railway API client
-│       └── SupabaseManager.swift  # Data persistence
-└── docs/
-    └── photos/
-```
+1. **Authentication** — Sign in with Google or email/password via Supabase Auth. Session persists across launches.
+2. **Calibration** — Stand evenly for 5 seconds to set personal baseline. Saved locally in UserDefaults and backed up to Supabase. Skipped on subsequent launches unless manually recalibrated.
+3. **Main App** — Seven tabs plus recalibration in the More section.
 
-### iOS App Features
+### Tab Features
 
-**Live Heatmap** — Two foot-shaped heatmaps with inverse-distance-weighted interpolation from 5 sensor points per foot. Color scale from blue (no pressure) through green and yellow to red (high pressure). Real-time arch index and pronation index badges with alert flags.
+**Live Heatmap** — Two foot-shaped heatmaps with inverse-distance-weighted interpolation from 5 sensor points per foot. Normalized against calibration baseline. Real-time arch index and pronation index badges with alert flags. Haptic motor controls.
 
-**Calibration** — 5-second "stand evenly" baseline capture. All subsequent readings normalized as percentage of personal baseline, eliminating sensor-to-sensor manufacturing variation.
+**Diagnostic Scan** — 10-second capture averaging ~150 frames. Computes all four biomechanical metrics per foot locally. Flags flat foot, overpronation, and heel imbalance. Automatically sends data to Gemini for AI-powered clinical interpretation and personalized exercise plan. Scan data saved to Supabase.
 
-**Diagnostic Scan** — 10-second capture averaging ~150 frames. Computes all four biomechanical metrics per foot. Flags flat foot, overpronation, and heel imbalance. Automatically sends data to Gemini for AI-powered clinical interpretation and personalized exercise plan.
+**Exercise Biofeedback** — Three exercise modes: Short Foot (arch activation), Heel Centering (balance), Forefoot Balance (weight distribution). Real-time scoring gauge with best-score tracking.
 
-**Exercise Biofeedback** — Three exercise modes (Short Foot, Heel Centering, Forefoot Balance) with real-time scoring gauge. Score updates live as the user performs the exercise, with best-score tracking.
+**Pressure Alerts** — Configurable ADC threshold and duration via sliders. Live zone timer circles. Push notification and haptic motor buzz when threshold is exceeded. Runs in background via CoreBluetooth background mode. Alert events saved to Supabase.
 
-**Pressure Alerts** — Configurable threshold and duration. When a zone sustains pressure above the threshold for the set duration, fires a phone notification and buzzes the haptic motor on the affected foot. Runs in the background via CoreBluetooth background mode.
+**Trends** — Longitudinal charts of arch index and pronation index from real Supabase scan data. Threshold lines show clinical boundaries.
 
-**Trends** — Longitudinal charts of arch index and pronation index across all saved scans, powered by real data from Supabase. Threshold lines show clinical boundaries.
+**Clinical Report** — One-tap formal podiatry report via Gemini 2.5 Flash. Shareable via iOS share sheet. Saved to Supabase.
 
-**Clinical Report** — One-tap generation of a full clinical report via Gemini, structured as a formal podiatry document. Shareable via iOS share sheet.
+**Profile** — User email, calibration status, cloud sync status, AI agent status. Sign out clears session and calibration.
 
-### Agent Server
+### Agent Server (Railway)
 
-FastAPI backend deployed on Railway. Two endpoints:
+FastAPI backend with three endpoints:
 
-`POST /analyze` — Accepts raw sensor readings, computes biomechanical metrics locally, generates rehab plan based on thresholds, sends everything to Gemini 2.5 Flash for clinical interpretation. Returns structured JSON with analysis text, metrics, and exercises.
+- `POST /analyze` — Computes metrics, generates rehab plan, sends to Gemini for clinical interpretation
+- `POST /report` — Generates formal podiatry report via Gemini
+- `GET /health` — Health check
 
-`POST /report` — Accepts session data, generates a formal clinical podiatry report via Gemini.
+### Data Layer (Supabase)
 
-`GET /health` — Health check.
+Google OAuth + email/password authentication. Four PostgreSQL tables with row-level security:
 
-### Data Persistence (Supabase)
-
-Anonymous device-based identity using a UUID stored in UserDefaults. Four tables:
-
-- **calibrations** — Baseline values per session
+- **calibrations** — Baseline values linked to authenticated user
 - **scans** — Raw readings, computed metrics, AI analysis text
 - **reports** — Generated clinical reports
-- **alerts** — Sustained pressure alert events with zone, foot, and duration
-
----
-
-## How It Works
-
-1. User puts on the insoles and opens the app
-2. App connects to the ESP32 via BLE automatically
-3. User calibrates by standing evenly for 5 seconds
-4. Live heatmap shows real-time pressure distribution
-5. User runs a diagnostic scan (10 seconds standing still)
-6. Local biomechanics analysis runs instantly
-7. Gemini AI provides clinical interpretation and exercise plan
-8. User performs exercises with real-time biofeedback scoring
-9. Alert system monitors for dangerous sustained pressure
-10. All data saves to Supabase for longitudinal tracking
-11. Clinical reports can be generated and shared with a podiatrist
+- **alerts** — Sustained pressure alert events
 
 ---
 
@@ -260,21 +213,21 @@ Anonymous device-based identity using a UUID stored in UserDefaults. Four tables
 | Microcontroller | ESP32-WROOM-32 (Arduino) |
 | Sensors | FSR 402 x10, CD74HC4067 mux |
 | Haptics | 3V coin motors, 2N2222 drivers |
-| Communication | BLE (CoreBluetooth) |
+| Communication | BLE (CoreBluetooth, background mode) |
 | iOS App | SwiftUI, Swift Charts, CoreBluetooth |
+| Authentication | Supabase Auth (Google OAuth + email) |
 | AI | Gemini 2.5 Flash (Google) |
-| Backend | FastAPI, deployed on Railway |
+| Backend | FastAPI on Railway |
 | Database | Supabase (PostgreSQL) |
-| Auth | Anonymous device UUID |
 
 ---
 
 ## Running Locally
 
 ### Firmware
-1. Install Arduino IDE with ESP32 board package
-2. Select "ESP32 Dev Module"
-3. Flash `firmware/pedisense.ino`
+```bash
+# Arduino IDE → Board: "ESP32 Dev Module" → Flash firmware/pedisense.ino
+```
 
 ### Agent Server
 ```bash
@@ -286,17 +239,25 @@ uvicorn agent_server:app --host 0.0.0.0 --port 8000
 
 ### iOS App
 1. Open `ios/Pedisense.xcodeproj` in Xcode
-2. Add Supabase Swift package: `https://github.com/supabase-community/supabase-swift`
-3. Select your iPhone as run destination
-4. Cmd+R
+2. Add packages: `supabase-swift`, `GoogleSignIn-iOS`
+3. Configure Google OAuth Client ID in Info.plist
+4. Run on physical iPhone (BLE requires real device)
 
 ---
 
-## Demo
+## Demo Script (3 minutes)
+
+**Minute 1 — Hook + Live Demo**
 
 "130,000 Americans lose a foot to diabetes every year because they can't feel the pressure that causes ulcers. Clinical pressure mats cost $15,000. Pedisense costs $150, it vibrates to warn you, and it has an AI podiatrist built in."
 
-The demo walks through: live heatmap responding to weight shifts, diagnostic scan detecting flat foot with AI analysis, exercise biofeedback with real-time scoring, sustained pressure alert triggering haptic motor buzz and phone notification, and a generated clinical report shareable with a podiatrist.
+**Minute 2 — Personal Story + AI Analysis**
+
+"I have flat feet. Both my parents are diabetic." Step on the sensors. Midfoot zone lights up. Tap Scan. AI analysis appears. Switch to Exercise mode. Score responds in real-time.
+
+**Minute 3 — Diabetic Monitoring + Report**
+
+Stand still. Alert fires, insole vibrates. "For a neuropathy patient, they didn't feel that pressure. But they still feel vibration." Generate and share a clinical report.
 
 ---
 
@@ -312,7 +273,7 @@ HackPrinceton Spring 2026
 
 ## Team
 
-Saswath Pall
+Saswath Yeshwanth
 
 ## Prizes Targeted
 
